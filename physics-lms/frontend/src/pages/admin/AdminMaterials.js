@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { FileText, Video, FileType, Link2, Plus, Trash2, BookOpen } from 'lucide-react';
+import React, { useEffect, useState, useRef } from 'react';
+import { FileText, Video, FileType, Link2, Plus, Trash2, BookOpen, UploadCloud, X, ExternalLink } from 'lucide-react';
 import Modal from '../../components/Modal';
 import Toast from '../../components/Toast';
 import api from '../../utils/api';
@@ -10,28 +10,44 @@ const typeIcons = {
   pdf:   <FileType size={13} />,
   link:  <Link2 size={13} />,
 };
+
 const empty = { title: '', description: '', content: '', batch: '11th', type: 'notes', url: '' };
 
 const AdminMaterials = () => {
   const [materials, setMaterials] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [form, setForm] = useState(empty);
+  const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [toast, setToast] = useState(null);
   const [batchFilter, setBatchFilter] = useState('all');
+  const fileRef = useRef();
 
   const load = () => api.get('/materials').then(r => setMaterials(r.data)).finally(() => setLoading(false));
   useEffect(() => { load(); }, []);
 
+  const handleClose = () => { setShowModal(false); setForm(empty); setFile(null); setUploadProgress(0); };
+
   const handleSave = async (e) => {
-    e.preventDefault(); setSaving(true);
+    e.preventDefault();
+    setSaving(true);
+    setUploadProgress(0);
     try {
-      await api.post('/materials', form);
+      const formData = new FormData();
+      Object.entries(form).forEach(([k, v]) => formData.append(k, v));
+      if (file) formData.append('file', file);
+
+      await api.post('/materials', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: (e) => setUploadProgress(Math.round((e.loaded * 100) / e.total)),
+      });
+
       setToast({ message: 'Material added successfully', type: 'success' });
-      setShowModal(false); setForm(empty); load();
+      handleClose(); load();
     } catch (err) {
-      setToast({ message: err.response?.data?.message || 'Failed to add', type: 'error' });
+      setToast({ message: err.response?.data?.message || 'Upload failed', type: 'error' });
     } finally { setSaving(false); }
   };
 
@@ -58,11 +74,14 @@ const AdminMaterials = () => {
               {b === 'all' ? 'All' : `Batch ${b}`}
             </button>
           ))}
-          <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}><Plus size={14} /> Add Material</button>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>
+            <Plus size={14} /> Add Material
+          </button>
         </div>
       </div>
 
-      {loading ? <div className="loading-screen" style={{ height: 200 }}><div className="loader" /></div>
+      {loading
+        ? <div className="loading-screen" style={{ height: 200 }}><div className="loader" /></div>
         : filtered.length === 0
           ? <div className="empty-state"><div className="empty-icon"><BookOpen size={40} /></div><p>No materials yet. Add your first one!</p></div>
           : (
@@ -77,7 +96,16 @@ const AdminMaterials = () => {
                   <div className="material-desc">{m.description || 'No description.'}</div>
                   <div className="material-footer">
                     <span className="material-date">{new Date(m.createdAt).toLocaleDateString()}</span>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(m._id)}><Trash2 size={13} /> Delete</button>
+                    <div style={{ display: 'flex', gap: 8 }}>
+                      {m.url && (
+                        <a href={m.url} download target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
+                          <ExternalLink size={12} /> Download
+                        </a>
+                      )}
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(m._id)}>
+                        <Trash2 size={13} /> Delete
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -85,11 +113,12 @@ const AdminMaterials = () => {
           )}
 
       {showModal && (
-        <Modal title="Add Study Material" onClose={() => { setShowModal(false); setForm(empty); }}>
+        <Modal title="Add Study Material" onClose={handleClose}>
           <form onSubmit={handleSave}>
             <div className="form-group">
               <label>Title</label>
-              <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required placeholder="e.g. Newton's Laws Notes" />
+              <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
+                required placeholder="e.g. Newton's Laws Notes" />
             </div>
             <div className="grid-2">
               <div className="form-group">
@@ -108,19 +137,67 @@ const AdminMaterials = () => {
             </div>
             <div className="form-group">
               <label>Description</label>
-              <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Brief description" />
+              <input value={form.description} onChange={e => setForm({ ...form, description: e.target.value })}
+                placeholder="Brief description" />
             </div>
             <div className="form-group">
-              <label>Content</label>
-              <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} required placeholder="Main content or notes..." rows={4} />
+              <label>Content / Notes</label>
+              <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })}
+                required placeholder="Main content or notes..." rows={3} />
             </div>
+
+            {/* File Upload */}
             <div className="form-group">
-              <label>Resource URL (optional)</label>
-              <input value={form.url} onChange={e => setForm({ ...form, url: e.target.value })} placeholder="https://..." type="url" />
+              <label>Upload File (PDF, Image, Doc)</label>
+              <input type="file" ref={fileRef} style={{ display: 'none' }}
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.ppt,.pptx"
+                onChange={e => setFile(e.target.files[0])} />
+              {file ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'rgba(79,142,247,0.08)', border: '1px solid rgba(79,142,247,0.25)', borderRadius: 10, padding: '10px 14px' }}>
+                  <FileType size={16} color="var(--accent)" />
+                  <span style={{ fontSize: 13, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</span>
+                  <button type="button" onClick={() => { setFile(null); fileRef.current.value = ''; }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', display: 'flex' }}>
+                    <X size={15} />
+                  </button>
+                </div>
+              ) : (
+                <button type="button" onClick={() => fileRef.current.click()}
+                  style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%', background: 'rgba(255,255,255,0.03)', border: '1px dashed var(--border)', borderRadius: 10, padding: '14px', cursor: 'pointer', color: 'var(--text-muted)', fontSize: 13, justifyContent: 'center', transition: 'all 0.2s' }}
+                  onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent)'}
+                  onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--border)'}>
+                  <UploadCloud size={18} color="var(--accent)" />
+                  Click to upload or drag a file here
+                </button>
+              )}
             </div>
+
+            {/* OR URL fallback */}
+            {!file && (
+              <div className="form-group">
+                <label>Or paste a URL (optional)</label>
+                <input value={form.url} onChange={e => setForm({ ...form, url: e.target.value })}
+                  placeholder="https://..." type="url" />
+              </div>
+            )}
+
+            {/* Upload progress */}
+            {saving && uploadProgress > 0 && (
+              <div style={{ marginBottom: 16 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>
+                  <span>Uploading...</span><span>{uploadProgress}%</span>
+                </div>
+                <div className="progress-bar">
+                  <div className="progress-fill" style={{ width: `${uploadProgress}%` }} />
+                </div>
+              </div>
+            )}
+
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
-              <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
-              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Saving...' : 'Add Material'}</button>
+              <button type="button" className="btn btn-outline" onClick={handleClose}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>
+                {saving ? 'Uploading...' : <><UploadCloud size={14} /> Upload Material</>}
+              </button>
             </div>
           </form>
         </Modal>

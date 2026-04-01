@@ -72,8 +72,8 @@ const StudentMaterials = () => {
             {selected.content}
           </div>
           {selected.url && (
-            <a href={selected.url} target="_blank" rel="noreferrer" className="btn btn-primary" style={{ marginTop: 16, justifyContent: 'center' }}>
-              <Link2 size={14} /> Open Resource
+            <a href={selected.url} download target="_blank" rel="noreferrer" className="btn btn-primary" style={{ marginTop: 16, justifyContent: 'center' }}>
+              <Link2 size={14} /> Download File
             </a>
           )}
         </Modal>

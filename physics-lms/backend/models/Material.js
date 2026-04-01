@@ -7,6 +7,7 @@ const materialSchema = new mongoose.Schema({
   batch: { type: String, enum: ['11th', '12th'], required: true },
   type: { type: String, enum: ['notes', 'video', 'pdf', 'link'], default: 'notes' },
   url: { type: String },
+  filePublicId: { type: String },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   createdAt: { type: Date, default: Date.now }
 });
