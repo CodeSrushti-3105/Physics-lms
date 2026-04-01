@@ -1,10 +1,16 @@
 import React, { useEffect, useState } from 'react';
+import { FileText, Video, FileType, Link2, Eye, Inbox } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import PendingBanner from '../../components/PendingBanner';
 import Modal from '../../components/Modal';
 import api from '../../utils/api';
 
-const typeIcons = { notes: '📄', video: '🎬', pdf: '📕', link: '🔗' };
+const typeIcons = {
+  notes: <FileText size={13} />,
+  video: <Video size={13} />,
+  pdf:   <FileType size={13} />,
+  link:  <Link2 size={13} />,
+};
 
 const StudentMaterials = () => {
   const { user } = useAuth();
@@ -38,7 +44,7 @@ const StudentMaterials = () => {
 
       {loading ? <div className="loading-screen" style={{ height: 200 }}><div className="loader" /></div>
         : materials.length === 0
-          ? <div className="empty-state"><div className="empty-icon">📭</div><p>No materials uploaded yet. Check back soon!</p></div>
+          ? <div className="empty-state"><div className="empty-icon"><Inbox size={40} /></div><p>No materials uploaded yet. Check back soon!</p></div>
           : (
             <div className="materials-grid">
               {materials.map(m => (
@@ -48,7 +54,7 @@ const StudentMaterials = () => {
                   <div className="material-desc">{m.description || 'No description provided.'}</div>
                   <div className="material-footer">
                     <span className="material-date">{new Date(m.createdAt).toLocaleDateString()}</span>
-                    <button className="btn btn-outline btn-sm" onClick={() => setSelected(m)}>View</button>
+                    <button className="btn btn-outline btn-sm" onClick={() => setSelected(m)}><Eye size={13} /> View</button>
                   </div>
                 </div>
               ))}
@@ -67,7 +73,7 @@ const StudentMaterials = () => {
           </div>
           {selected.url && (
             <a href={selected.url} target="_blank" rel="noreferrer" className="btn btn-primary" style={{ marginTop: 16, justifyContent: 'center' }}>
-              Open Resource →
+              <Link2 size={14} /> Open Resource
             </a>
           )}
         </Modal>

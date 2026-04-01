@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
+import { FileText, Video, FileType, Link2, Plus, Trash2, BookOpen } from 'lucide-react';
 import Modal from '../../components/Modal';
 import Toast from '../../components/Toast';
 import api from '../../utils/api';
 
-const typeIcons = { notes: '📄', video: '🎬', pdf: '📕', link: '🔗' };
+const typeIcons = {
+  notes: <FileText size={13} />,
+  video: <Video size={13} />,
+  pdf:   <FileType size={13} />,
+  link:  <Link2 size={13} />,
+};
 const empty = { title: '', description: '', content: '', batch: '11th', type: 'notes', url: '' };
 
 const AdminMaterials = () => {
@@ -52,13 +58,13 @@ const AdminMaterials = () => {
               {b === 'all' ? 'All' : `Batch ${b}`}
             </button>
           ))}
-          <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>+ Add Material</button>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}><Plus size={14} /> Add Material</button>
         </div>
       </div>
 
       {loading ? <div className="loading-screen" style={{ height: 200 }}><div className="loader" /></div>
         : filtered.length === 0
-          ? <div className="empty-state"><div className="empty-icon">📚</div><p>No materials yet. Add your first one!</p></div>
+          ? <div className="empty-state"><div className="empty-icon"><BookOpen size={40} /></div><p>No materials yet. Add your first one!</p></div>
           : (
             <div className="materials-grid">
               {filtered.map(m => (
@@ -71,7 +77,7 @@ const AdminMaterials = () => {
                   <div className="material-desc">{m.description || 'No description.'}</div>
                   <div className="material-footer">
                     <span className="material-date">{new Date(m.createdAt).toLocaleDateString()}</span>
-                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(m._id)}>Delete</button>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(m._id)}><Trash2 size={13} /> Delete</button>
                   </div>
                 </div>
               ))}

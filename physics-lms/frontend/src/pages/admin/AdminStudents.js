@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Users, UserCheck, UserX } from 'lucide-react';
 import Toast from '../../components/Toast';
 import api from '../../utils/api';
 
@@ -42,7 +43,7 @@ const AdminStudents = ({ onApproval }) => {
 
       {loading ? <div className="loading-screen" style={{ height: 200 }}><div className="loader" /></div>
         : filtered.length === 0
-          ? <div className="empty-state"><div className="empty-icon">👥</div><p>No students in this category.</p></div>
+          ? <div className="empty-state"><div className="empty-icon"><Users size={40} /></div><p>No students in this category.</p></div>
           : (
             <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
               <table className="students-table">
@@ -74,10 +75,10 @@ const AdminStudents = ({ onApproval }) => {
                       <td>
                         <div className="table-actions">
                           {s.status !== 'approved' && (
-                            <button className="btn btn-success btn-sm" onClick={() => updateStatus(s._id, 'approved')}>Approve</button>
+                            <button className="btn btn-success btn-sm" onClick={() => updateStatus(s._id, 'approved')}><UserCheck size={13} /> Approve</button>
                           )}
                           {s.status !== 'rejected' && (
-                            <button className="btn btn-danger btn-sm" onClick={() => updateStatus(s._id, 'rejected')}>Reject</button>
+                            <button className="btn btn-danger btn-sm" onClick={() => updateStatus(s._id, 'rejected')}><UserX size={13} /> Reject</button>
                           )}
                         </div>
                       </td>

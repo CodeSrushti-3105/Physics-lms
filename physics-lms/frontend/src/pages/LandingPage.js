@@ -1,21 +1,22 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { Atom, Layers, ClipboardList, BookMarked, Lock, BarChart2, BookOpen } from 'lucide-react';
 import '../styles/landing.css';
 
 const features = [
-  { icon: '⚛️', title: 'Batch-wise Learning', desc: 'Separate content streams for 11th and 12th grade students. Every resource is precisely targeted.' },
-  { icon: '🧪', title: 'Interactive Tests', desc: 'Timed MCQ tests with instant scoring and detailed performance analytics.' },
-  { icon: '📐', title: 'Formula Library', desc: 'Quick-access physics formula reference tool covering all major topics.' },
-  { icon: '🔐', title: 'Secure Access', desc: 'Admin-controlled student approval system ensures only verified students get access.' },
-  { icon: '📊', title: 'Result Tracking', desc: 'Students can track their test history and performance over time.' },
-  { icon: '📚', title: 'Study Materials', desc: 'Organized notes, links, and resources uploaded directly by your teacher.' },
+  { icon: <Layers size={26} />,       title: 'Batch-wise Learning', desc: 'Separate content streams for 11th and 12th grade students. Every resource is precisely targeted.' },
+  { icon: <ClipboardList size={26} />, title: 'Interactive Tests',   desc: 'Timed MCQ tests with instant scoring and detailed performance analytics.' },
+  { icon: <BookMarked size={26} />,    title: 'Formula Library',     desc: 'Quick-access physics formula reference tool covering all major topics.' },
+  { icon: <Lock size={26} />,          title: 'Secure Access',       desc: 'Admin-controlled student approval system ensures only verified students get access.' },
+  { icon: <BarChart2 size={26} />,     title: 'Result Tracking',     desc: 'Students can track their test history and performance over time.' },
+  { icon: <BookOpen size={26} />,      title: 'Study Materials',     desc: 'Organized notes, links, and resources uploaded directly by your teacher.' },
 ];
 
 const LandingPage = () => (
   <div className="landing">
     <nav className="landing-nav">
       <div className="nav-logo">
-        <span>⚛️</span> PhysicsLab
+        <Atom size={22} /> PhysicsLab
       </div>
       <div className="nav-links">
         <Link to="/login" className="btn btn-outline">Sign In</Link>

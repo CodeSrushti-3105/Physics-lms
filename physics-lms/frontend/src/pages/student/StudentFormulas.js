@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FlaskConical } from 'lucide-react';
 
 const formulas = [
   { name: "Newton's Second Law", eq: 'F = ma', desc: 'Force equals mass times acceleration', topic: 'Mechanics' },
@@ -69,7 +70,7 @@ const StudentFormulas = () => {
       </div>
 
       {filtered.length === 0 && (
-        <div className="empty-state"><div className="empty-icon">🔬</div><p>No formulas match your search.</p></div>
+        <div className="empty-state"><div className="empty-icon"><FlaskConical size={40} /></div><p>No formulas match your search.</p></div>
       )}
     </div>
   );

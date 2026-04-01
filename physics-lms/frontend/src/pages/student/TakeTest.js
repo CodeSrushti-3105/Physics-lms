@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Timer, Send, PartyPopper } from 'lucide-react';
 import api from '../../utils/api';
 
 const TakeTest = () => {
@@ -52,7 +53,7 @@ const TakeTest = () => {
       <div className="page-content page-enter">
         <div className="quiz-container">
           <div className="score-display">
-            <div style={{ fontSize: 48, marginBottom: 16 }}>🎉</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16, color: 'var(--accent)' }}><PartyPopper size={48} /></div>
             <h2 style={{ fontFamily: 'var(--font2)', fontSize: 24, marginBottom: 24 }}>Test Submitted!</h2>
             <div className={`score-circle`} style={{ borderColor: grade === 'high' ? 'var(--success)' : grade === 'mid' ? 'var(--warning)' : 'var(--danger)', background: grade === 'high' ? 'rgba(16,185,129,0.1)' : grade === 'mid' ? 'rgba(245,158,11,0.1)' : 'rgba(239,68,68,0.1)' }}>
               <div className="score-pct" style={{ color: grade === 'high' ? 'var(--success)' : grade === 'mid' ? 'var(--warning)' : 'var(--danger)' }}>{result.percentage}%</div>
@@ -60,7 +61,7 @@ const TakeTest = () => {
             </div>
             <p style={{ fontSize: 18, marginBottom: 8 }}>{result.score} / {result.totalMarks} marks</p>
             <p style={{ color: 'var(--text-muted)', marginBottom: 32 }}>
-              {result.percentage >= 75 ? '🌟 Excellent work!' : result.percentage >= 40 ? '👍 Good effort, keep practicing!' : '📖 Review the material and try again.'}
+              {result.percentage >= 75 ? 'Excellent work!' : result.percentage >= 40 ? 'Good effort, keep practicing!' : 'Review the material and try again.'}
             </p>
             <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
               <button className="btn btn-outline" onClick={() => navigate('/student/tests')}>Back to Tests</button>
@@ -82,8 +83,8 @@ const TakeTest = () => {
               <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>{test?.questions.length} questions · {test?.totalMarks} marks</p>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: 'var(--font2)', fontSize: 24, fontWeight: 700, color: timeLeft < 60 ? 'var(--danger)' : 'var(--accent)' }}>
-                {mins}:{secs}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font2)', fontSize: 24, fontWeight: 700, color: timeLeft < 60 ? 'var(--danger)' : 'var(--accent)' }}>
+                <Timer size={20} /> {mins}:{secs}
               </div>
               <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>remaining</div>
             </div>
@@ -116,7 +117,7 @@ const TakeTest = () => {
         <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
           <button className="btn btn-outline" onClick={() => navigate('/student/tests')}>Cancel</button>
           <button className="btn btn-primary" onClick={handleSubmit} disabled={submitted}>
-            Submit Test →
+            <Send size={14} /> Submit Test
           </button>
         </div>
       </div>

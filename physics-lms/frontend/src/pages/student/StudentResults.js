@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { BarChart2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import PendingBanner from '../../components/PendingBanner';
 import api from '../../utils/api';
@@ -36,7 +37,7 @@ const StudentResults = () => {
 
       {loading ? <div className="loading-screen" style={{ height: 200 }}><div className="loader" /></div>
         : results.length === 0
-          ? <div className="empty-state"><div className="empty-icon">📊</div><p>No results yet. Take a test to see your scores here.</p></div>
+          ? <div className="empty-state"><div className="empty-icon"><BarChart2 size={40} /></div><p>No results yet. Take a test to see your scores here.</p></div>
           : results.map(r => {
             const grade = r.percentage >= 75 ? 'high' : r.percentage >= 40 ? 'mid' : 'low';
             return (
@@ -52,7 +53,7 @@ const StudentResults = () => {
                   </div>
                 </div>
                 <span className={`badge badge-${grade === 'high' ? 'approved' : grade === 'mid' ? 'pending' : 'rejected'}`}>
-                  {grade === 'high' ? '🌟 Excellent' : grade === 'mid' ? '👍 Good' : '📖 Needs Work'}
+                  {grade === 'high' ? 'Excellent' : grade === 'mid' ? 'Good' : 'Needs Work'}
                 </span>
               </div>
             );

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Atom, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
 
@@ -31,14 +32,14 @@ const RegisterPage = () => {
       <div className="auth-bg-grid" />
       <div className="auth-card">
         <div className="auth-logo">
-          <div className="auth-logo-icon">⚛️</div>
+          <div className="auth-logo-icon"><Atom size={30} /></div>
           <h1>PhysicsLab</h1>
           <p>Learning Management System</p>
         </div>
         <h2 className="auth-title">Create account</h2>
         <p className="auth-subtitle">Register and wait for teacher approval</p>
-        {error && <div className="auth-error">⚠️ {error}</div>}
-        {success && <div className="auth-success">✓ {success}</div>}
+        {error && <div className="auth-error"><AlertTriangle size={15} /> {error}</div>}
+        {success && <div className="auth-success"><CheckCircle size={15} /> {success}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Full Name</label>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Plus, Trash2, ClipboardList, HelpCircle, Clock, Award } from 'lucide-react';
 import Modal from '../../components/Modal';
 import Toast from '../../components/Toast';
 import api from '../../utils/api';
@@ -69,13 +70,13 @@ const AdminTests = () => {
               {b === 'all' ? 'All' : `Batch ${b}`}
             </button>
           ))}
-          <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}>+ Create Test</button>
+          <button className="btn btn-primary btn-sm" onClick={() => setShowModal(true)}><Plus size={14} /> Create Test</button>
         </div>
       </div>
 
       {loading ? <div className="loading-screen" style={{ height: 200 }}><div className="loader" /></div>
         : filtered.length === 0
-          ? <div className="empty-state"><div className="empty-icon">📝</div><p>No tests yet. Create your first one!</p></div>
+          ? <div className="empty-state"><div className="empty-icon"><ClipboardList size={40} /></div><p>No tests yet. Create your first one!</p></div>
           : (
             <div className="tests-grid">
               {filtered.map(t => (
@@ -87,11 +88,11 @@ const AdminTests = () => {
                   <div className="test-title">{t.title}</div>
                   <div className="test-desc">{t.description || 'No description.'}</div>
                   <div className="test-stats">
-                    <div className="test-stat"><span>❓</span>{t.questions?.length || 0} Qs</div>
-                    <div className="test-stat"><span>⏱️</span>{t.duration}m</div>
-                    <div className="test-stat"><span>🏆</span>{t.totalMarks} marks</div>
+                    <div className="test-stat"><HelpCircle size={13} /> {t.questions?.length || 0} Qs</div>
+                    <div className="test-stat"><Clock size={13} /> {t.duration}m</div>
+                    <div className="test-stat"><Award size={13} /> {t.totalMarks} marks</div>
                   </div>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t._id)}>Delete</button>
+                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t._id)}><Trash2 size={13} /> Delete</button>
                 </div>
               ))}
             </div>
@@ -125,7 +126,7 @@ const AdminTests = () => {
             <div className="divider" />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
               <span style={{ fontWeight: 600, fontFamily: 'var(--font2)' }}>Questions ({form.questions.length})</span>
-              <button type="button" className="btn btn-outline btn-sm" onClick={addQuestion}>+ Add Question</button>
+              <button type="button" className="btn btn-outline btn-sm" onClick={addQuestion}><Plus size={13} /> Add Question</button>
             </div>
 
             {form.questions.map((q, qi) => (
@@ -133,7 +134,10 @@ const AdminTests = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
                   <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--accent)' }}>Q{qi + 1}</span>
                   {form.questions.length > 1 && (
-                    <button type="button" onClick={() => removeQuestion(qi)} style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', fontSize: 18 }}>✕</button>
+                    <button type="button" onClick={() => removeQuestion(qi)}
+                      style={{ background: 'none', border: 'none', color: 'var(--danger)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+                      <Trash2 size={15} />
+                    </button>
                   )}
                 </div>
                 <div className="form-group" style={{ marginBottom: 10 }}>

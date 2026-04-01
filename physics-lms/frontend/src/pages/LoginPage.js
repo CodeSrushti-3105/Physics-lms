@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Atom, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
 
@@ -28,13 +29,13 @@ const LoginPage = () => {
       <div className="auth-bg-grid" />
       <div className="auth-card">
         <div className="auth-logo">
-          <div className="auth-logo-icon">⚛️</div>
+          <div className="auth-logo-icon"><Atom size={30} /></div>
           <h1>PhysicsLab</h1>
           <p>Learning Management System</p>
         </div>
         <h2 className="auth-title">Welcome back</h2>
         <p className="auth-subtitle">Sign in to continue your learning journey</p>
-        {error && <div className="auth-error">⚠️ {error}</div>}
+        {error && <div className="auth-error"><AlertTriangle size={15} /> {error}</div>}
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email Address</label>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { LayoutDashboard, Users, BookOpen, ClipboardList, BarChart2 } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import AdminHome from './admin/AdminHome';
 import AdminStudents from './admin/AdminStudents';
@@ -18,14 +19,14 @@ const AdminDashboard = () => {
 
   const navItems = [
     { section: 'Overview' },
-    { path: '/admin', icon: '🏠', label: 'Dashboard' },
+    { path: '/admin',           icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
     { section: 'Students' },
-    { path: '/admin/students', icon: '👥', label: 'Students', badge: pendingCount },
+    { path: '/admin/students',  icon: <Users size={16} />,           label: 'Students',  badge: pendingCount },
     { section: 'Content' },
-    { path: '/admin/materials', icon: '📚', label: 'Materials' },
-    { path: '/admin/tests', icon: '📝', label: 'Tests' },
+    { path: '/admin/materials', icon: <BookOpen size={16} />,        label: 'Materials' },
+    { path: '/admin/tests',     icon: <ClipboardList size={16} />,   label: 'Tests' },
     { section: 'Analytics' },
-    { path: '/admin/results', icon: '📊', label: 'Results' },
+    { path: '/admin/results',   icon: <BarChart2 size={16} />,       label: 'Results' },
   ];
 
   return (
@@ -34,11 +35,11 @@ const AdminDashboard = () => {
       <div className="main-content">
         <Routes>
           <Route index element={<AdminHome />} />
-          <Route path="students" element={<AdminStudents onApproval={() => setPendingCount(p => Math.max(0, p - 1))} />} />
+          <Route path="students"  element={<AdminStudents onApproval={() => setPendingCount(p => Math.max(0, p - 1))} />} />
           <Route path="materials" element={<AdminMaterials />} />
-          <Route path="tests" element={<AdminTests />} />
-          <Route path="results" element={<AdminResults />} />
-          <Route path="*" element={<Navigate to="/admin" />} />
+          <Route path="tests"     element={<AdminTests />} />
+          <Route path="results"   element={<AdminResults />} />
+          <Route path="*"         element={<Navigate to="/admin" />} />
         </Routes>
       </div>
     </div>

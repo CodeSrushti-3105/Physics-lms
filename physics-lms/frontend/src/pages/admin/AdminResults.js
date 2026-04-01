@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { BarChart2 } from 'lucide-react';
 import api from '../../utils/api';
 
 const AdminResults = () => {
@@ -31,7 +32,7 @@ const AdminResults = () => {
 
       {loading ? <div className="loading-screen" style={{ height: 200 }}><div className="loader" /></div>
         : filtered.length === 0
-          ? <div className="empty-state"><div className="empty-icon">📊</div><p>No results yet.</p></div>
+          ? <div className="empty-state"><div className="empty-icon"><BarChart2 size={40} /></div><p>No results yet.</p></div>
           : (
             <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
               <table className="students-table">
@@ -50,7 +51,7 @@ const AdminResults = () => {
                   {filtered.map(r => {
                     const pct = r.percentage;
                     const grade = pct >= 75 ? 'approved' : pct >= 40 ? 'pending' : 'rejected';
-                    const label = pct >= 75 ? '🌟 A' : pct >= 60 ? '👍 B' : pct >= 40 ? '📖 C' : '❌ F';
+                    const label = pct >= 75 ? 'A' : pct >= 60 ? 'B' : pct >= 40 ? 'C' : 'F';
                     return (
                       <tr key={r._id}>
                         <td>
