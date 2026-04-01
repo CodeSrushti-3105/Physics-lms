@@ -13,7 +13,7 @@ const Sidebar = ({ navItems }) => {
       <div className="sidebar-logo">
         <div className="sidebar-logo-icon"><Atom size={20} /></div>
         <div>
-          <div className="sidebar-logo-text">PhysicsLab</div>
+          <div className="sidebar-logo-text">S.B.Classes</div>
           <div className="sidebar-logo-sub">LMS Platform</div>
         </div>
       </div>

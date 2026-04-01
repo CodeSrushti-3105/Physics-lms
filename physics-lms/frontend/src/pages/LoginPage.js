@@ -30,7 +30,7 @@ const LoginPage = () => {
       <div className="auth-card">
         <div className="auth-logo">
           <div className="auth-logo-icon"><Atom size={30} /></div>
-          <h1>PhysicsLab</h1>
+          <h1>S.B.Classes</h1>
           <p>Learning Management System</p>
         </div>
         <h2 className="auth-title">Welcome back</h2>
