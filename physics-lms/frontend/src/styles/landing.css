@@ -260,6 +260,11 @@
 }
 
 @media (max-width: 768px) {
-  .landing-nav { padding: 16px 24px; }
-  .features { padding: 60px 24px; }
+  .landing-nav { padding: 16px 20px; }
+  .nav-links .btn-outline { display: none; }
+  .features { padding: 60px 20px; }
+  .hero-content { padding: 0 16px; }
+  .hero-actions { flex-direction: column; align-items: center; }
+  .hero-actions .btn { width: 100%; max-width: 280px; justify-content: center; }
+  .section-header { padding: 0 4px; }
 }

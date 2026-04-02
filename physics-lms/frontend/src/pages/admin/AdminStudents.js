@@ -45,7 +45,7 @@ const AdminStudents = ({ onApproval }) => {
         : filtered.length === 0
           ? <div className="empty-state"><div className="empty-icon"><Users size={40} /></div><p>No students in this category.</p></div>
           : (
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div className="card table-wrapper" style={{ padding: 0, overflow: 'hidden' }}>
               <table className="students-table">
                 <thead>
                   <tr>

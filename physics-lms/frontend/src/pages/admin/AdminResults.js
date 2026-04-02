@@ -34,7 +34,7 @@ const AdminResults = () => {
         : filtered.length === 0
           ? <div className="empty-state"><div className="empty-icon"><BarChart2 size={40} /></div><p>No results yet.</p></div>
           : (
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
+            <div className="card table-wrapper" style={{ padding: 0, overflow: 'hidden' }}>
               <table className="students-table">
                 <thead>
                   <tr>

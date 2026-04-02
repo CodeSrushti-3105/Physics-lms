@@ -84,3 +84,13 @@
 }
 .batch-option .batch-num { font-family: var(--font2); font-size: 22px; font-weight: 700; color: var(--accent); }
 .batch-option .batch-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+@media (max-width: 600px) {
+  .auth-page { padding: 16px; align-items: flex-start; padding-top: 32px; }
+  .auth-card { padding: 28px 20px; border-radius: 18px; }
+  .auth-logo-icon { width: 52px; height: 52px; }
+  .auth-title { font-size: 20px; }
+  .batch-selector { gap: 8px; }
+  .batch-option { padding: 12px 8px; }
+  .batch-num { font-size: 20px; }
+}
