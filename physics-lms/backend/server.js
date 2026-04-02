@@ -5,10 +5,16 @@ require('dotenv').config();
 
 const app = express();
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    process.env.FRONTEND_URL,
-  ].filter(Boolean),
+  origin: function(origin, callback) {
+    const allowed = [
+      'http://localhost:3000',
+      'https://physics-lms.vercel.app',
+      process.env.FRONTEND_URL,
+    ].filter(Boolean);
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin || allowed.includes(origin)) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
 }));
 app.use(express.json());
