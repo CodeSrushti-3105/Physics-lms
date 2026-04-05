@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { FileText, Video, FileType, Link2, Plus, Trash2, BookOpen, UploadCloud, X, ExternalLink } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { FileText, Video, FileType, Link2, Plus, Trash2, BookOpen, UploadCloud, X, ExternalLink, Download } from 'lucide-react';
 import Modal from '../../components/Modal';
 import Toast from '../../components/Toast';
 import api from '../../utils/api';
@@ -58,6 +58,26 @@ const AdminMaterials = () => {
     setToast({ message: 'Material deleted', type: 'success' });
   };
 
+  const handleDownload = async (id, filename) => {
+    try {
+      const response = await api.get(`/materials/${id}/download`, {
+        responseType: 'blob'
+      });
+      
+      // Create blob link to download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setToast({ message: 'Download failed', type: 'error' });
+    }
+  };
+
   const filtered = batchFilter === 'all' ? materials : materials.filter(m => m.batch === batchFilter);
 
   return (
@@ -97,10 +117,18 @@ const AdminMaterials = () => {
                   <div className="material-footer">
                     <span className="material-date">{new Date(m.createdAt).toLocaleDateString()}</span>
                     <div style={{ display: 'flex', gap: 8 }}>
-                      {m.url && (
-                        <a href={m.url} download target="_blank" rel="noreferrer" className="btn btn-outline btn-sm">
-                          <ExternalLink size={12} /> Download
-                        </a>
+                      {(m.fileId || m.url) && (
+                        <>
+                          {m.fileId ? (
+                            <button onClick={() => handleDownload(m._id, m.originalFileName || m.title)} className="btn btn-outline btn-sm">
+                              <Download size={12} /> Download
+                            </button>
+                          ) : (
+                            <button onClick={() => window.open(m.url, '_blank')} className="btn btn-outline btn-sm">
+                              <ExternalLink size={12} /> Open Link
+                            </button>
+                          )}
+                        </>
                       )}
                       <button className="btn btn-danger btn-sm" onClick={() => handleDelete(m._id)}>
                         <Trash2 size={13} /> Delete

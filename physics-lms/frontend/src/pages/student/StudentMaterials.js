@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { FileText, Video, FileType, Link2, Eye, Inbox } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { FileText, Video, FileType, Link2, Eye, Inbox, Download } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import PendingBanner from '../../components/PendingBanner';
 import Modal from '../../components/Modal';
@@ -17,12 +17,36 @@ const StudentMaterials = () => {
   const [materials, setMaterials] = useState([]);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [downloading, setDownloading] = useState(false);
   const isApproved = user?.status === 'approved';
 
   useEffect(() => {
     if (!isApproved) { setLoading(false); return; }
     api.get('/materials').then(r => setMaterials(r.data)).finally(() => setLoading(false));
   }, [isApproved]);
+
+  const handleDownload = async (id, filename) => {
+    setDownloading(true);
+    try {
+      const response = await api.get(`/materials/${id}/download`, {
+        responseType: 'blob'
+      });
+      
+      // Create blob link to download
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download failed:', err);
+    } finally {
+      setDownloading(false);
+    }
+  };
 
   if (!isApproved) return (
     <div className="page-content page-enter">
@@ -71,10 +95,24 @@ const StudentMaterials = () => {
           <div style={{ background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: 16, fontSize: 14, lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>
             {selected.content}
           </div>
-          {selected.url && (
-            <a href={selected.url} download target="_blank" rel="noreferrer" className="btn btn-primary" style={{ marginTop: 16, justifyContent: 'center' }}>
-              <Link2 size={14} /> Download File
-            </a>
+
+          {selected.fileId && (
+            <button
+              onClick={() => handleDownload(selected._id, selected.originalFileName || selected.title)}
+              disabled={downloading}
+              className="btn btn-primary"
+              style={{ marginTop: 16, justifyContent: 'center', width: '100%' }}>
+              <Download size={14} /> {downloading ? 'Downloading...' : 'Download File'}
+            </button>
+          )}
+
+          {selected.url && !selected.fileId && (
+            <button
+              onClick={() => window.open(selected.url, '_blank')}
+              className="btn btn-primary"
+              style={{ marginTop: 16, justifyContent: 'center', width: '100%' }}>
+              <Link2 size={14} /> Open Link
+            </button>
           )}
         </Modal>
       )}

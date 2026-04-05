@@ -11,7 +11,7 @@ app.use(express.json());
 // Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/admin', require('./routes/admin'));
-app.use('/api/materials', require('./routes/materials'));
+app.use('/api/materials', require('./routes/materials-gridfs-native'));
 app.use('/api/tests', require('./routes/tests'));
 app.use('/api/results', require('./routes/results'));
 
