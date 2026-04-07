@@ -17,29 +17,50 @@ router.post('/register', async (req, res) => {
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ message: 'Email already registered' });
     
-    // Generate verification token
-    const verificationToken = crypto.randomBytes(32).toString('hex');
-    const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+    // For students: Generate verification token and send email
+    // For admin: No verification needed
+    const isStudent = !email.includes('admin'); // Simple check, you can improve this
     
-    // Create user with verification token
-    const user = await User.create({ 
-      name, 
-      email, 
-      password, 
-      batch, 
-      role: 'student', 
-      status: 'pending',
-      emailVerified: false,
-      verificationToken,
-      verificationTokenExpiry
-    });
-    
-    // Send verification email
-    await sendVerificationEmail(email, name, verificationToken);
-    
-    res.status(201).json({ 
-      message: 'Registration successful! Please check your email to verify your account.'
-    });
+    if (isStudent) {
+      // Generate verification token for students
+      const verificationToken = crypto.randomBytes(32).toString('hex');
+      const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      
+      // Create student with verification token
+      const user = await User.create({ 
+        name, 
+        email, 
+        password, 
+        batch, 
+        role: 'student', 
+        status: 'pending',
+        emailVerified: false,
+        verificationToken,
+        verificationTokenExpiry
+      });
+      
+      // Send verification email
+      await sendVerificationEmail(email, name, verificationToken);
+      
+      res.status(201).json({ 
+        message: 'Registration successful! Please check your email to verify your account.'
+      });
+    } else {
+      // Create admin without verification
+      const user = await User.create({ 
+        name, 
+        email, 
+        password, 
+        batch, 
+        role: 'admin', 
+        status: 'approved',
+        emailVerified: true // Admin doesn't need verification
+      });
+      
+      res.status(201).json({ 
+        message: 'Admin account created successfully!'
+      });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -54,8 +75,8 @@ router.post('/login', async (req, res) => {
     if (!user || !(await user.matchPassword(password)))
       return res.status(401).json({ message: 'Invalid credentials' });
     
-    // Check if email is verified
-    if (!user.emailVerified) {
+    // Check if email is verified (only for students, not admin)
+    if (user.role === 'student' && !user.emailVerified) {
       return res.status(403).json({ 
         message: 'Please verify your email before logging in.'
       });
