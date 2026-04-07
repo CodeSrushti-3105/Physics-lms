@@ -2,6 +2,20 @@ const nodemailer = require('nodemailer');
 
 // Create email transporter
 const createTransporter = () => {
+  // Use Brevo (Sendinblue) for production
+  if (process.env.BREVO_API_KEY) {
+    return nodemailer.createTransport({
+      host: 'smtp-relay.brevo.com',
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.BREVO_API_KEY,
+      },
+    });
+  }
+  
+  // Fallback to Gmail for local development
   if (process.env.EMAIL_SERVICE === 'gmail') {
     return nodemailer.createTransport({
       service: 'gmail',
