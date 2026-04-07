@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, UserCheck, UserX } from 'lucide-react';
+import { Users, UserCheck, UserX, Trash2 } from 'lucide-react';
 import Toast from '../../components/Toast';
 import api from '../../utils/api';
 
@@ -20,6 +20,19 @@ const AdminStudents = ({ onApproval }) => {
       setToast({ message: `Student ${status}`, type: 'success' });
     } catch {
       setToast({ message: 'Action failed', type: 'error' });
+    }
+  };
+
+  const deleteStudent = async (id, name) => {
+    if (!window.confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) return;
+    
+    try {
+      await api.delete(`/admin/students/${id}`);
+      setStudents(prev => prev.filter(s => s._id !== id));
+      setToast({ message: 'Student deleted successfully', type: 'success' });
+    } catch (err) {
+      console.error('Delete error:', err);
+      setToast({ message: err.response?.data?.message || 'Failed to delete student', type: 'error' });
     }
   };
 
@@ -92,6 +105,9 @@ const AdminStudents = ({ onApproval }) => {
                           {s.status !== 'rejected' && (
                             <button className="btn btn-danger btn-sm" onClick={() => updateStatus(s._id, 'rejected')}><UserX size={13} /> Reject</button>
                           )}
+                          <button className="btn btn-danger btn-sm" onClick={() => deleteStudent(s._id, s.name)} style={{ marginLeft: 4 }}>
+                            <Trash2 size={13} /> Delete
+                          </button>
                         </div>
                       </td>
                     </tr>

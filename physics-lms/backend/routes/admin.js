@@ -38,6 +38,25 @@ router.patch('/students/:id/status', protect, adminOnly, async (req, res) => {
   }
 });
 
+// Delete student
+router.delete('/students/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'Student not found' });
+    if (user.role !== 'student') return res.status(400).json({ message: 'Cannot delete admin users' });
+    
+    // Delete student's results
+    await Result.deleteMany({ student: req.params.id });
+    
+    // Delete student
+    await User.findByIdAndDelete(req.params.id);
+    
+    res.json({ message: 'Student deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Get all results (admin view)
 router.get('/results', protect, adminOnly, async (req, res) => {
   try {
