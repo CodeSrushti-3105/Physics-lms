@@ -15,11 +15,14 @@ const RegisterPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!form.batch) return setError('Please select your batch');
-    setError(''); setLoading(true);
+    setError(''); 
+    setSuccess('');
+    setLoading(true);
     try {
       const data = await register(form);
-      setSuccess(data.message + ' Redirecting to login...');
-      setTimeout(() => navigate('/login'), 2500);
+      setSuccess(data.message || 'Registration successful! Please check your email to verify your account.');
+      // Don't auto-redirect, let user read the message
+      setTimeout(() => navigate('/login'), 5000);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     } finally {

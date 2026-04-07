@@ -13,7 +13,8 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); setLoading(true);
+    setError(''); 
+    setLoading(true);
     try {
       const user = await login(form.email, form.password);
       navigate(user.role === 'admin' ? '/admin' : '/student');

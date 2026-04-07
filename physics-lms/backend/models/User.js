@@ -8,6 +8,9 @@ const userSchema = new mongoose.Schema({
   role: { type: String, enum: ['admin', 'student'], default: 'student' },
   batch: { type: String, enum: ['11th', '12th'], required: function() { return this.role === 'student'; } },
   status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+  emailVerified: { type: Boolean, default: false },
+  verificationToken: { type: String },
+  verificationTokenExpiry: { type: Date },
   createdAt: { type: Date, default: Date.now }
 });
 
