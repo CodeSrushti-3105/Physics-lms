@@ -1,46 +1,17 @@
 const nodemailer = require('nodemailer');
 
-// Create email transporter
-const createTransporter = () => {
-  // Use Brevo (Sendinblue) for production
-  if (process.env.BREVO_API_KEY) {
-    return nodemailer.createTransport({
-      host: 'smtp-relay.brevo.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.BREVO_API_KEY,
-      },
-    });
-  }
-  
-  // Fallback to Gmail for local development
-  if (process.env.EMAIL_SERVICE === 'gmail') {
-    return nodemailer.createTransport({
+// Send verification email
+const sendVerificationEmail = async (email, name, verificationToken) => {
+  try {
+    // Use Gmail SMTP
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASSWORD,
       },
     });
-  }
-  
-  return nodemailer.createTransporter({
-    host: process.env.SMTP_HOST || 'smtp.gmail.com',
-    port: process.env.SMTP_PORT || 587,
-    secure: false,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
-  });
-};
-
-// Send verification email
-const sendVerificationEmail = async (email, name, verificationToken) => {
-  try {
-    const transporter = createTransporter();
+    
     const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/verify-email/${verificationToken}`;
     
     const mailOptions = {
@@ -61,9 +32,10 @@ const sendVerificationEmail = async (email, name, verificationToken) => {
     };
     
     await transporter.sendMail(mailOptions);
+    console.log('Verification email sent to:', email);
     return true;
   } catch (error) {
-    console.error('Email error:', error);
+    console.error('Email error:', error.message);
     return false;
   }
 };
