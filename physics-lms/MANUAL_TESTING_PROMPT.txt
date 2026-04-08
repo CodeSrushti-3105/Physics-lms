@@ -1,0 +1,255 @@
+CHATGPT PROMPT FOR MANUAL TESTING DOCUMENTATION
+================================================
+
+Generate a comprehensive manual testing document for a Physics Learning Management System (LMS) web application. The document should be professional, detailed, and ready for QA testing.
+
+PROJECT OVERVIEW:
+- Name: Physics LMS
+- Type: Learning Management System for Physics Education
+- Users: Students and Admin
+- Tech Stack: React frontend, Node.js/Express backend, MongoDB database
+- Features: User authentication with email verification, material management, test creation/taking, results tracking, admin approval system
+
+PAGES TO TEST:
+
+1. LANDING PAGE (/)
+   - Hero section with "Get Started" button
+   - Features section
+   - Navigation to Login/Register
+
+2. REGISTER PAGE (/register)
+   - Student registration form (name, email, password, confirm password)
+   - Email verification system (verification email sent after registration)
+   - Validation for all fields
+   - Password strength requirements
+   - Redirect to login after successful registration
+   - Admin approval required message
+
+3. LOGIN PAGE (/login)
+   - Email and password fields
+   - Role selection (Student/Admin)
+   - Email verification check for students
+   - Admin approval check for students
+   - Remember me functionality
+   - Error messages for invalid credentials
+   - Redirect to appropriate dashboard based on role
+
+4. EMAIL VERIFICATION PAGE (/verify-email/:token)
+   - Token validation
+   - Success/failure messages
+   - Redirect to login after verification
+   - Expired token handling
+
+5. STUDENT DASHBOARD (/student/dashboard)
+   - Sidebar navigation (Home, Materials, Tests, Results, Formulas)
+   - Pending approval banner (if not approved by admin)
+   - Welcome message with student name
+   - Quick stats overview
+
+6. STUDENT HOME (/student/home)
+   - Dashboard overview
+   - Recent activities
+   - Quick access to materials and tests
+
+7. STUDENT MATERIALS (/student/materials)
+   - List of all uploaded materials
+   - Download functionality for PDFs and other files
+   - Material details (title, description, upload date)
+   - GridFS-based file storage
+   - Search/filter functionality
+
+8. STUDENT TESTS (/student/tests)
+   - List of available tests
+   - Test details (title, duration, total marks)
+   - "Take Test" button for each test
+   - Already attempted tests marked
+
+9. TAKE TEST PAGE (/student/take-test/:testId)
+   - Test instructions
+   - Timer countdown
+   - Multiple choice questions
+   - Navigation between questions
+   - Submit test functionality
+   - Auto-submit when time expires
+   - Confirmation before submission
+
+10. STUDENT RESULTS (/student/results)
+    - List of all attempted tests
+    - Score display (marks obtained/total marks)
+    - Percentage calculation
+    - Date of attempt
+    - View detailed results
+
+11. STUDENT FORMULAS (/student/formulas)
+    - Physics formulas reference
+    - Categorized by topics
+    - Search functionality
+
+12. ADMIN DASHBOARD (/admin/dashboard)
+    - Sidebar navigation (Home, Students, Materials, Tests, Results)
+    - Admin overview statistics
+    - Quick actions
+
+13. ADMIN HOME (/admin/home)
+    - Dashboard statistics
+    - Total students, materials, tests
+    - Recent activities
+
+14. ADMIN STUDENTS (/admin/students)
+    - List of all registered students
+    - Email verification status (✓ Verified / ⚠ Not Verified)
+    - Approval status (Pending/Approved)
+    - Approve/Reject buttons for pending students
+    - Delete student functionality with confirmation
+    - Student details (name, email, registration date)
+
+15. ADMIN MATERIALS (/admin/materials)
+    - Upload new materials (PDF, documents)
+    - Material title and description
+    - List of all uploaded materials
+    - Download functionality
+    - Delete materials
+    - GridFS file storage
+
+16. ADMIN TESTS (/admin/tests)
+    - Create new test form
+    - Test details (title, duration, total marks)
+    - Add multiple choice questions
+    - Question text and 4 options
+    - Mark correct answer
+    - Edit/Delete tests
+    - List of all tests
+
+17. ADMIN RESULTS (/admin/results)
+    - View all student test results
+    - Filter by student or test
+    - Detailed score breakdown
+    - Export functionality
+
+TEST CASE FORMAT:
+For each page, provide test cases in this format:
+
+Test Case ID: TC-[PAGE]-[NUMBER]
+Test Scenario: [Brief description]
+Pre-conditions: [What needs to be set up before testing]
+Test Steps:
+  1. [Step 1]
+  2. [Step 2]
+  3. [Step 3]
+Expected Result: [What should happen]
+Actual Result: [To be filled during testing]
+Status: [Pass/Fail - to be filled during testing]
+Priority: [High/Medium/Low]
+Test Data: [Sample data to use]
+
+TESTING CATEGORIES TO COVER:
+
+1. FUNCTIONAL TESTING
+   - All features work as expected
+   - Form validations
+   - CRUD operations
+   - File upload/download
+   - Authentication and authorization
+   - Email verification flow
+   - Admin approval workflow
+
+2. UI/UX TESTING
+   - Responsive design (desktop, tablet, mobile)
+   - Button functionality
+   - Navigation flow
+   - Error messages display
+   - Loading states
+   - Toast notifications
+   - Modal dialogs
+
+3. SECURITY TESTING
+   - Password encryption
+   - JWT token validation
+   - Role-based access control
+   - Protected routes
+   - SQL injection prevention
+   - XSS prevention
+
+4. INTEGRATION TESTING
+   - Frontend-backend communication
+   - Database operations
+   - File storage (GridFS)
+   - Email service integration
+
+5. NEGATIVE TESTING
+   - Invalid inputs
+   - Empty form submissions
+   - Expired tokens
+   - Unauthorized access attempts
+   - File upload with wrong formats
+   - Network failures
+
+6. EDGE CASES
+   - Very long text inputs
+   - Special characters in inputs
+   - Simultaneous user actions
+   - Large file uploads
+   - Test timeout scenarios
+   - Multiple login attempts
+
+SPECIFIC TEST SCENARIOS TO INCLUDE:
+
+AUTHENTICATION:
+- Register with valid data
+- Register with existing email
+- Register with weak password
+- Register with mismatched passwords
+- Login with unverified email
+- Login with unapproved account
+- Login with wrong credentials
+- Login as admin vs student
+- Logout functionality
+- Session persistence
+
+EMAIL VERIFICATION:
+- Verify email with valid token
+- Verify email with expired token
+- Verify email with invalid token
+- Resend verification email
+- Email verification status display
+
+ADMIN APPROVAL:
+- Approve pending student
+- Reject pending student
+- Access restrictions for unapproved students
+- Notification after approval
+
+MATERIALS:
+- Upload PDF file
+- Upload with missing title
+- Upload with missing file
+- Download material
+- Delete material
+- View material details
+
+TESTS:
+- Create test with questions
+- Create test with missing fields
+- Take test and submit
+- Take test and let timer expire
+- Navigate between questions
+- View results after submission
+- Attempt same test multiple times
+
+STUDENT MANAGEMENT:
+- View all students
+- Filter students by status
+- Delete student with confirmation
+- Delete student and verify results are deleted
+
+OUTPUT FORMAT:
+Please provide the manual testing document in a structured format with:
+- Table of Contents
+- Introduction
+- Test Environment Setup
+- Detailed test cases for each page
+- Test execution summary template
+- Bug report template
+- Sign-off section
+
+Make it professional and ready to use for QA testing team.
