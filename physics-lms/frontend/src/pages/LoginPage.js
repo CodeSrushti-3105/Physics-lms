@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Atom, AlertTriangle } from 'lucide-react';
+import { Atom, AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
 
@@ -8,6 +8,7 @@ const LoginPage = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -45,8 +46,38 @@ const LoginPage = () => {
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input type="password" placeholder="••••••••" value={form.password}
-              onChange={e => setForm({ ...form, password: e.target.value })} required />
+            <div style={{ position: 'relative' }}>
+              <input 
+                type={showPassword ? "text" : "password"} 
+                placeholder="••••••••" 
+                value={form.password}
+                onChange={e => setForm({ ...form, password: e.target.value })} 
+                required 
+                style={{ paddingRight: '45px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  padding: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'color 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px' }} disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In →'}

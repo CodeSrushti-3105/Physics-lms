@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Atom, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Atom, AlertTriangle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
 
@@ -9,6 +9,7 @@ const RegisterPage = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
@@ -55,8 +56,39 @@ const RegisterPage = () => {
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input type="password" placeholder="Min 6 characters" value={form.password}
-              onChange={e => setForm({ ...form, password: e.target.value })} required minLength={6} />
+            <div style={{ position: 'relative' }}>
+              <input 
+                type={showPassword ? "text" : "password"} 
+                placeholder="Min 6 characters" 
+                value={form.password}
+                onChange={e => setForm({ ...form, password: e.target.value })} 
+                required 
+                minLength={6}
+                style={{ paddingRight: '45px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  color: 'var(--text-muted)',
+                  padding: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  transition: 'color 0.2s'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text)'}
+                onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
           <div className="form-group">
             <label>Select Your Batch</label>

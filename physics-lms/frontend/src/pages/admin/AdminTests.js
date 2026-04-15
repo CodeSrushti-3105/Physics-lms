@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Plus, Trash2, ClipboardList, HelpCircle, Clock, Award } from 'lucide-react';
+import { Plus, Trash2, ClipboardList, HelpCircle, Clock, Award, Edit2 } from 'lucide-react';
 import Modal from '../../components/Modal';
 import Toast from '../../components/Toast';
 import api from '../../utils/api';
 
 const emptyQ = { question: '', options: ['', '', '', ''], correctAnswer: 0, marks: 1 };
-const emptyTest = { title: '', description: '', batch: '11th', duration: 30, questions: [{ ...emptyQ, options: ['', '', '', ''] }] };
+const emptyTest = { title: '', description: '', batch: '11th', duration: 30, durationUnit: 'minutes', questions: [{ ...emptyQ, options: ['', '', '', ''] }] };
 
 const AdminTests = () => {
   const [tests, setTests] = useState([]);
   const [showModal, setShowModal] = useState(false);
+  const [editingTest, setEditingTest] = useState(null);
   const [form, setForm] = useState(JSON.parse(JSON.stringify(emptyTest)));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -39,9 +40,25 @@ const AdminTests = () => {
   const handleSave = async (e) => {
     e.preventDefault(); setSaving(true);
     try {
-      await api.post('/tests', form);
-      setToast({ message: 'Test created successfully', type: 'success' });
-      setShowModal(false); setForm(JSON.parse(JSON.stringify(emptyTest))); load();
+      // Convert duration to minutes if hours selected
+      const durationInMinutes = form.durationUnit === 'hours' 
+        ? form.duration * 60 
+        : form.duration;
+      
+      if (editingTest) {
+        // Update existing test
+        await api.put(`/tests/${editingTest}`, { ...form, duration: durationInMinutes });
+        setToast({ message: 'Test updated successfully', type: 'success' });
+      } else {
+        // Create new test
+        await api.post('/tests', { ...form, duration: durationInMinutes });
+        setToast({ message: 'Test created successfully', type: 'success' });
+      }
+      
+      setShowModal(false); 
+      setForm(JSON.parse(JSON.stringify(emptyTest))); 
+      setEditingTest(null);
+      load();
     } catch (err) {
       setToast({ message: err.response?.data?.message || 'Failed', type: 'error' });
     } finally { setSaving(false); }
@@ -52,6 +69,23 @@ const AdminTests = () => {
     await api.delete(`/tests/${id}`);
     setTests(prev => prev.filter(t => t._id !== id));
     setToast({ message: 'Test deleted', type: 'success' });
+  };
+
+  const handleEdit = (test) => {
+    // Convert minutes back to hours if >= 60
+    const duration = test.duration >= 60 ? test.duration / 60 : test.duration;
+    const durationUnit = test.duration >= 60 ? 'hours' : 'minutes';
+    
+    setForm({
+      title: test.title,
+      description: test.description || '',
+      batch: test.batch,
+      duration: duration,
+      durationUnit: durationUnit,
+      questions: test.questions
+    });
+    setEditingTest(test._id);
+    setShowModal(true);
   };
 
   const filtered = batchFilter === 'all' ? tests : tests.filter(t => t.batch === batchFilter);
@@ -92,14 +126,21 @@ const AdminTests = () => {
                     <div className="test-stat"><Clock size={13} /> {t.duration}m</div>
                     <div className="test-stat"><Award size={13} /> {t.totalMarks} marks</div>
                   </div>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t._id)}><Trash2 size={13} /> Delete</button>
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <button className="btn btn-outline btn-sm" onClick={() => handleEdit(t)}>
+                      <Edit2 size={13} /> Edit
+                    </button>
+                    <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t._id)}>
+                      <Trash2 size={13} /> Delete
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
           )}
 
       {showModal && (
-        <Modal title="Create New Test" onClose={() => { setShowModal(false); setForm(JSON.parse(JSON.stringify(emptyTest))); }} maxWidth={680}>
+        <Modal title={editingTest ? 'Edit Test' : 'Create New Test'} onClose={() => { setShowModal(false); setForm(JSON.parse(JSON.stringify(emptyTest))); setEditingTest(null); }} maxWidth={680}>
           <form onSubmit={handleSave} style={{ maxHeight: '70vh', overflowY: 'auto', paddingRight: 4 }}>
             <div className="form-group">
               <label>Test Title</label>
@@ -114,8 +155,25 @@ const AdminTests = () => {
                 </select>
               </div>
               <div className="form-group">
-                <label>Duration (minutes)</label>
-                <input type="number" value={form.duration} onChange={e => setForm({ ...form, duration: +e.target.value })} min={5} max={180} />
+                <label>Duration</label>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <input 
+                    type="number" 
+                    value={form.duration} 
+                    onChange={e => setForm({ ...form, duration: +e.target.value })} 
+                    min={1} 
+                    max={form.durationUnit === 'hours' ? 5 : 300}
+                    style={{ flex: 1 }}
+                  />
+                  <select 
+                    value={form.durationUnit} 
+                    onChange={e => setForm({ ...form, durationUnit: e.target.value })}
+                    style={{ width: '110px' }}
+                  >
+                    <option value="minutes">Minutes</option>
+                    <option value="hours">Hours</option>
+                  </select>
+                </div>
               </div>
             </div>
             <div className="form-group">
@@ -162,8 +220,10 @@ const AdminTests = () => {
             ))}
 
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
-              <button type="button" className="btn btn-outline" onClick={() => setShowModal(false)}>Cancel</button>
-              <button type="submit" className="btn btn-primary" disabled={saving}>{saving ? 'Creating...' : 'Create Test'}</button>
+              <button type="button" className="btn btn-outline" onClick={() => { setShowModal(false); setEditingTest(null); }}>Cancel</button>
+              <button type="submit" className="btn btn-primary" disabled={saving}>
+                {saving ? (editingTest ? 'Updating...' : 'Creating...') : (editingTest ? 'Update Test' : 'Create Test')}
+              </button>
             </div>
           </form>
         </Modal>

@@ -38,6 +38,22 @@ router.post('/', protect, adminOnly, async (req, res) => {
   }
 });
 
+// Update test (admin)
+router.put('/:id', protect, adminOnly, async (req, res) => {
+  try {
+    const totalMarks = req.body.questions?.reduce((sum, q) => sum + (q.marks || 1), 0) || 0;
+    const test = await Test.findByIdAndUpdate(
+      req.params.id,
+      { ...req.body, totalMarks },
+      { new: true }
+    );
+    if (!test) return res.status(404).json({ message: 'Test not found' });
+    res.json(test);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Submit test
 router.post('/:id/submit', protect, approvedOnly, async (req, res) => {
   try {

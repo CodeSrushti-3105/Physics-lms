@@ -20,8 +20,15 @@ const TakeTest = () => {
     }).catch(() => navigate('/student/tests')).finally(() => setLoading(false));
   }, [id, navigate]);
 
-  const handleSubmit = useCallback(async () => {
+  const handleSubmit = useCallback(async (isAutoSubmit = false) => {
     if (submitted) return;
+    
+    // Check if time is up and it's a manual submit
+    if (!isAutoSubmit && timeLeft <= 0) {
+      alert('⏰ Time is over! You cannot submit the test because you exceeded the time limit.');
+      return;
+    }
+    
     setSubmitted(true);
     try {
       const ansArr = test.questions.map((_, i) => answers[i] ?? -1);
@@ -31,11 +38,15 @@ const TakeTest = () => {
       alert(err.response?.data?.message || 'Submission failed');
       setSubmitted(false);
     }
-  }, [submitted, test, answers, id]);
+  }, [submitted, test, answers, id, timeLeft]);
 
   useEffect(() => {
     if (!timeLeft || submitted) return;
-    if (timeLeft <= 0) { handleSubmit(); return; }
+    if (timeLeft <= 0) { 
+      // Auto-submit when time runs out
+      handleSubmit(true); 
+      return; 
+    }
     const t = setTimeout(() => setTimeLeft(p => p - 1), 1000);
     return () => clearTimeout(t);
   }, [timeLeft, submitted, handleSubmit]);
@@ -116,8 +127,13 @@ const TakeTest = () => {
 
         <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
           <button className="btn btn-outline" onClick={() => navigate('/student/tests')}>Cancel</button>
-          <button className="btn btn-primary" onClick={handleSubmit} disabled={submitted}>
-            <Send size={14} /> Submit Test
+          <button 
+            className="btn btn-primary" 
+            onClick={handleSubmit} 
+            disabled={submitted || timeLeft <= 0}
+            style={{ opacity: timeLeft <= 0 ? 0.5 : 1 }}
+          >
+            <Send size={14} /> {timeLeft <= 0 ? 'Time Expired' : 'Submit Test'}
           </button>
         </div>
       </div>
