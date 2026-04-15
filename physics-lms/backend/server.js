@@ -4,8 +4,16 @@ const cors = require('cors');
 require('dotenv').config();
 
 const app = express();
-app.use(cors());
-app.options('*', cors());
+const corsOptions = {
+  origin: [
+    'https://physics-lms.vercel.app',
+    'https://physicsclasseshub.xyz',
+    'https://www.physicsclasseshub.xyz'
+  ],
+  credentials: true
+};
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // Routes

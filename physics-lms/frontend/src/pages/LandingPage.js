@@ -81,11 +81,11 @@ const LandingPage = () => (
             Empowering students through quality physics education. Learn, practice, and excel.
           </p>
           <div className="footer-contact">
-            <a href="mailto:shohibadshah@gmail.com" className="footer-contact-item">
-              <Mail size={15} /> shohibadshah@gmail.com
+            <a href="mailto:badshahshoaib824@gmail.com" className="footer-contact-item">
+              <Mail size={15} /> badshahshoaib824@gmail.com
             </a>
-            <a href="tel:+919022331505" className="footer-contact-item">
-              <Phone size={15} /> +91 90223 31505
+            <a href="tel:+918830805768" className="footer-contact-item">
+              <Phone size={15} /> +91 88308 05768
             </a>
           </div>
         </div>
@@ -123,7 +123,7 @@ const LandingPage = () => (
           <div className="footer-section-title">Our Location</div>
           <div className="footer-address">
             <MapPin size={15} style={{ flexShrink: 0, marginTop: 2 }} />
-            <span>Near Mosum Pool, Malegaon,<br />Dist. Nashik, Maharashtra</span>
+            <span>Guruwarward, Malegaon,<br />Dist. Nashik, Maharashtra</span>
           </div>
           <div className="footer-map">
             <iframe
