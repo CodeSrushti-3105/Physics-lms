@@ -64,7 +64,6 @@ const AdminStudents = ({ onApproval }) => {
                   <tr>
                     <th>Student</th>
                     <th>Email</th>
-                    <th>Email Status</th>
                     <th>Batch</th>
                     <th>Status</th>
                     <th>Joined</th>
@@ -83,17 +82,6 @@ const AdminStudents = ({ onApproval }) => {
                         </div>
                       </td>
                       <td style={{ color: 'var(--text-muted)' }}>{s.email}</td>
-                      <td>
-                        {s.emailVerified ? (
-                          <span className="badge badge-approved" style={{ background: 'var(--success-bg)', color: 'var(--success)' }}>
-                            ✓ Verified
-                          </span>
-                        ) : (
-                          <span className="badge badge-pending" style={{ background: 'var(--warning-bg)', color: 'var(--warning)' }}>
-                            ⚠ Not Verified
-                          </span>
-                        )}
-                      </td>
                       <td><span className="badge badge-batch">{s.batch}</span></td>
                       <td><span className={`badge badge-${s.status}`}>{s.status}</span></td>
                       <td style={{ color: 'var(--text-muted)', fontSize: 13 }}>{new Date(s.createdAt).toLocaleDateString()}</td>

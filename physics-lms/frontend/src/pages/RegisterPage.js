@@ -20,9 +20,8 @@ const RegisterPage = () => {
     setLoading(true);
     try {
       const data = await register(form);
-      setSuccess(data.message || 'Registration successful! Please check your email to verify your account.');
-      // Don't auto-redirect, let user read the message
-      setTimeout(() => navigate('/login'), 5000);
+      setSuccess(data.message || 'Registration successful! Waiting for admin approval.');
+      setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     } finally {

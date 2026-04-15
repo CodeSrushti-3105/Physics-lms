@@ -1,56 +1,40 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
-const { sendVerificationEmail } = require('../config/email');
 
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+// Email validation regex
+const isValidEmail = (email) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+};
 
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, batch } = req.body;
+    const { name, password, batch } = req.body;
+    let { email } = req.body;
+    
+    // Normalize email: trim and convert to lowercase
+    email = email.trim().toLowerCase();
+    
+    // Validate email format
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
     
     // Check if email already exists
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ message: 'Email already registered' });
     
-    // For students: Generate verification token and send email
-    // For admin: No verification needed
-    const isStudent = !email.includes('admin'); // Simple check, you can improve this
+    // Determine if admin or student
+    const isAdmin = email.includes('admin');
     
-    if (isStudent) {
-      // Generate verification token for students
-      const verificationToken = crypto.randomBytes(32).toString('hex');
-      const verificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
-      
-      // Create student with verification token
-      const user = await User.create({ 
-        name, 
-        email, 
-        password, 
-        batch, 
-        role: 'student', 
-        status: 'pending',
-        emailVerified: false,
-        verificationToken,
-        verificationTokenExpiry
-      });
-      
-      // Send verification email
-      const emailSent = await sendVerificationEmail(email, name, verificationToken);
-      
-      if (!emailSent) {
-        console.error('Failed to send verification email to:', email);
-      }
-      
-      res.status(201).json({ 
-        message: 'Registration successful! Please check your email to verify your account.'
-      });
-    } else {
-      // Create admin without verification
+    if (isAdmin) {
+      // Create admin account - auto-approved
       const user = await User.create({ 
         name, 
         email, 
@@ -58,11 +42,26 @@ router.post('/register', async (req, res) => {
         batch, 
         role: 'admin', 
         status: 'approved',
-        emailVerified: true // Admin doesn't need verification
+        emailVerified: true
       });
       
       res.status(201).json({ 
         message: 'Admin account created successfully!'
+      });
+    } else {
+      // Create student account - pending admin approval
+      const user = await User.create({ 
+        name, 
+        email, 
+        password, 
+        batch, 
+        role: 'student', 
+        status: 'pending',
+        emailVerified: true // No email verification needed
+      });
+      
+      res.status(201).json({ 
+        message: 'Registration successful! Your account is pending admin approval.'
       });
     }
   } catch (err) {
@@ -73,18 +72,20 @@ router.post('/register', async (req, res) => {
 // Login
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    let { email, password } = req.body;
+    
+    // Normalize email: trim and convert to lowercase
+    email = email.trim().toLowerCase();
+    
+    // Validate email format
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+    
     const user = await User.findOne({ email });
     
     if (!user || !(await user.matchPassword(password)))
       return res.status(401).json({ message: 'Invalid credentials' });
-    
-    // Check if email is verified (only for students, not admin)
-    if (user.role === 'student' && !user.emailVerified) {
-      return res.status(403).json({ 
-        message: 'Please verify your email before logging in.'
-      });
-    }
     
     res.json({
       token: generateToken(user._id),
@@ -105,37 +106,6 @@ router.post('/login', async (req, res) => {
 // Get current user
 router.get('/me', protect, (req, res) => {
   res.json(req.user);
-});
-
-// Verify email
-router.get('/verify-email/:token', async (req, res) => {
-  try {
-    const { token } = req.params;
-    
-    // Find user with this token
-    const user = await User.findOne({ 
-      verificationToken: token,
-      verificationTokenExpiry: { $gt: Date.now() }
-    });
-    
-    if (!user) {
-      return res.status(400).json({ 
-        message: 'Invalid or expired verification link.'
-      });
-    }
-    
-    // Mark email as verified
-    user.emailVerified = true;
-    user.verificationToken = undefined;
-    user.verificationTokenExpiry = undefined;
-    await user.save();
-    
-    res.json({ 
-      message: 'Email verified successfully! You can now log in.'
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
 });
 
 module.exports = router;
