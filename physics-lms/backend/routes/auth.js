@@ -108,43 +108,4 @@ router.get('/me', protect, (req, res) => {
   res.json(req.user);
 });
 
-// Forgot Password (No Email Required)
-router.post('/forgot-password', async (req, res) => {
-  try {
-    let { email, name, newPassword } = req.body;
-    
-    // Normalize email
-    email = email.trim().toLowerCase();
-    
-    // Validate inputs
-    if (!email || !name || !newPassword) {
-      return res.status(400).json({ message: 'All fields are required' });
-    }
-    
-    // Validate email format
-    if (!isValidEmail(email)) {
-      return res.status(400).json({ message: 'Invalid email format' });
-    }
-    
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(404).json({ message: 'No account found with this email' });
-    }
-    
-    // Verify name matches exactly (case-sensitive for security)
-    if (user.name !== name) {
-      return res.status(401).json({ message: 'Name does not match our records' });
-    }
-    
-    // Update password (will be hashed by pre-save hook)
-    user.password = newPassword;
-    await user.save();
-    
-    res.json({ message: 'Password reset successful! You can now login with your new password.' });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
 module.exports = router;
