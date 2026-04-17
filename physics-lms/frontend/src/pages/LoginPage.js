@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Atom, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import { Atom, AlertTriangle, Eye, EyeOff, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
 
@@ -30,6 +30,34 @@ const LoginPage = () => {
     <div className="auth-page">
       <div className="auth-bg-grid" />
       <div className="auth-card">
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--text-muted)',
+            padding: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '8px',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--bg-secondary)';
+            e.currentTarget.style.color = 'var(--text)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'none';
+            e.currentTarget.style.color = 'var(--text-muted)';
+          }}
+        >
+          <X size={20} />
+        </button>
         <div className="auth-logo">
           <div className="auth-logo-icon"><Atom size={30} /></div>
           <h1>S.B.Classes</h1>
@@ -77,6 +105,11 @@ const LoginPage = () => {
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
+            </div>
+            <div style={{ textAlign: 'right', marginTop: '8px' }}>
+              <Link to="/forgot-password" style={{ fontSize: '13px', color: 'var(--primary)' }}>
+                Forgot password?
+              </Link>
             </div>
           </div>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px' }} disabled={loading}>

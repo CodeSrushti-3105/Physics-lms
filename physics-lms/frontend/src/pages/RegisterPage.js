@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Atom, AlertTriangle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { Atom, AlertTriangle, CheckCircle, Eye, EyeOff, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/auth.css';
 
@@ -34,6 +34,34 @@ const RegisterPage = () => {
     <div className="auth-page">
       <div className="auth-bg-grid" />
       <div className="auth-card">
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            position: 'absolute',
+            top: '20px',
+            right: '20px',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            color: 'var(--text-muted)',
+            padding: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderRadius: '8px',
+            transition: 'all 0.2s'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = 'var(--bg-secondary)';
+            e.currentTarget.style.color = 'var(--text)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = 'none';
+            e.currentTarget.style.color = 'var(--text-muted)';
+          }}
+        >
+          <X size={20} />
+        </button>
         <div className="auth-logo">
           <div className="auth-logo-icon"><Atom size={30} /></div>
           <h1>S.B.Classes</h1>

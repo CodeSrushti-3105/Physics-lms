@@ -6,6 +6,7 @@ import api from '../../utils/api';
 const AdminStudents = ({ onApproval }) => {
   const [students, setStudents] = useState([]);
   const [filter, setFilter] = useState('all');
+  const [batchFilter, setBatchFilter] = useState('all'); // New batch filter
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
@@ -36,7 +37,9 @@ const AdminStudents = ({ onApproval }) => {
     }
   };
 
-  const filtered = students.filter(s => filter === 'all' || s.status === filter);
+  const filtered = students
+    .filter(s => filter === 'all' || s.status === filter)
+    .filter(s => batchFilter === 'all' || s.batch === batchFilter);
 
   return (
     <div className="page-content page-enter">
@@ -52,6 +55,31 @@ const AdminStudents = ({ onApproval }) => {
               style={{ textTransform: 'capitalize' }}>{f}</button>
           ))}
         </div>
+      </div>
+
+      {/* Batch Filter Tabs */}
+      <div style={{ display: 'flex', gap: 12, marginBottom: 20, borderBottom: '2px solid var(--border)', paddingBottom: 2 }}>
+        {['all', '11th', '12th'].map(batch => (
+          <button
+            key={batch}
+            onClick={() => setBatchFilter(batch)}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '10px 20px',
+              fontSize: '14px',
+              fontWeight: 600,
+              color: batchFilter === batch ? 'var(--primary)' : 'var(--text-muted)',
+              cursor: 'pointer',
+              borderBottom: batchFilter === batch ? '2px solid var(--primary)' : '2px solid transparent',
+              marginBottom: '-2px',
+              transition: 'all 0.2s',
+              textTransform: 'capitalize'
+            }}
+          >
+            {batch === 'all' ? 'All Batches' : `${batch} Grade`}
+          </button>
+        ))}
       </div>
 
       {loading ? <div className="loading-screen" style={{ height: 200 }}><div className="loader" /></div>
