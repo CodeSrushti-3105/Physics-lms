@@ -108,4 +108,55 @@ router.get('/me', protect, (req, res) => {
   res.json(req.user);
 });
 
+// Forgot Password (Case-insensitive name matching)
+router.post('/forgot-password', async (req, res) => {
+  try {
+    let { email, name, newPassword } = req.body;
+    
+    // Normalize email
+    email = email.trim().toLowerCase();
+    
+    // Normalize name
+    name = name.trim();
+    
+    // Validate inputs
+    if (!email || !name || !newPassword) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+    
+    // Validate email format
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: 'Invalid email format' });
+    }
+    
+    // Validate password length
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: 'Password must be at least 6 characters' });
+    }
+    
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'No account found with this email' });
+    }
+    
+    // Verify name matches (case-insensitive, trimmed) - works for old and new users
+    const userNameNormalized = user.name.trim().toLowerCase();
+    const inputNameNormalized = name.toLowerCase();
+    
+    if (userNameNormalized !== inputNameNormalized) {
+      return res.status(401).json({ message: 'Name does not match our records' });
+    }
+    
+    // Update password (will be hashed by pre-save hook)
+    user.password = newPassword;
+    await user.save();
+    
+    res.json({ message: 'Password reset successful! You can now login with your new password.' });
+  } catch (err) {
+    console.error('Forgot password error:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

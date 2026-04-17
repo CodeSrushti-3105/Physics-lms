@@ -106,6 +106,11 @@ const LoginPage = () => {
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
+            <div style={{ textAlign: 'right', marginTop: '8px' }}>
+              <Link to="/forgot-password" style={{ fontSize: '13px', color: 'var(--primary)' }}>
+                Forgot password?
+              </Link>
+            </div>
           </div>
           <button type="submit" className="btn btn-primary" style={{ width: '100%', justifyContent: 'center', padding: '13px' }} disabled={loading}>
             {loading ? 'Signing in...' : 'Sign In →'}
