@@ -23,6 +23,7 @@ app.use('/api/materials', require('./routes/materials-gridfs-native'));
 app.use('/api/tests', require('./routes/tests'));
 app.use('/api/results', require('./routes/results'));
 app.use('/api/formulas', require('./routes/formulas'));
+app.use('/api/announcements', require('./routes/announcements'));
 
 // Seed admin on first run
 const seedAdmin = async () => {

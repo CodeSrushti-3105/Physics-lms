@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { LayoutDashboard, Users, BookOpen, ClipboardList, BarChart2, Calculator } from 'lucide-react';
+import { LayoutDashboard, Users, BookOpen, ClipboardList, BarChart2, Calculator, Megaphone } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import AdminHome from './admin/AdminHome';
 import AdminStudents from './admin/AdminStudents';
@@ -8,6 +8,7 @@ import AdminMaterials from './admin/AdminMaterials';
 import AdminTests from './admin/AdminTests';
 import AdminResults from './admin/AdminResults';
 import AdminFormulas from './admin/AdminFormulas';
+import AdminAnnouncements from './admin/AdminAnnouncements';
 import api from '../utils/api';
 import '../styles/dashboard.css';
 
@@ -23,6 +24,7 @@ const AdminDashboard = () => {
     { path: '/admin',           icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
     { section: 'Students' },
     { path: '/admin/students',  icon: <Users size={16} />,           label: 'Students',  badge: pendingCount },
+    { path: '/admin/announcements', icon: <Megaphone size={16} />,   label: 'Announcements' },
     { section: 'Content' },
     { path: '/admin/materials', icon: <BookOpen size={16} />,        label: 'Materials' },
     { path: '/admin/tests',     icon: <ClipboardList size={16} />,   label: 'Tests' },
@@ -38,6 +40,7 @@ const AdminDashboard = () => {
         <Routes>
           <Route index element={<AdminHome />} />
           <Route path="students"  element={<AdminStudents onApproval={() => setPendingCount(p => Math.max(0, p - 1))} />} />
+          <Route path="announcements" element={<AdminAnnouncements />} />
           <Route path="materials" element={<AdminMaterials />} />
           <Route path="tests"     element={<AdminTests />} />
           <Route path="formulas"  element={<AdminFormulas />} />

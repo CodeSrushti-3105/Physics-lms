@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   emailVerified: { type: Boolean, default: false },
   verificationToken: { type: String },
   verificationTokenExpiry: { type: Date },
+  lastReadAnnouncement: { type: mongoose.Schema.Types.ObjectId, ref: 'Announcement' },
   createdAt: { type: Date, default: Date.now }
 });
 
