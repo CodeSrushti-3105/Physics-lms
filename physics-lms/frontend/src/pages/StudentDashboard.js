@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, ClipboardList, BarChart2, FlaskConical, Bell } from 'lucide-react';
+import { LayoutDashboard, BookOpen, ClipboardList, BarChart2, FlaskConical, Bell, TrendingUp } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import StudentHome from './student/StudentHome';
@@ -9,6 +9,7 @@ import StudentTests from './student/StudentTests';
 import StudentResults from './student/StudentResults';
 import StudentFormulas from './student/StudentFormulas';
 import StudentAnnouncements from './student/StudentAnnouncements';
+import StudentProgress from './student/StudentProgress';
 import TakeTest from './student/TakeTest';
 import api from '../utils/api';
 import '../styles/dashboard.css';
@@ -43,6 +44,7 @@ const StudentDashboard = () => {
     { section: 'Overview' },
     { path: '/student', icon: <LayoutDashboard size={16} />, label: 'Dashboard' },
     { path: '/student/announcements', icon: <Bell size={16} />, label: 'Announcements', badge: unreadCount },
+    { path: '/student/progress', icon: <TrendingUp size={16} />, label: 'My Progress', locked: !isApproved },
     { section: 'Learning' },
     { path: '/student/materials', icon: <BookOpen size={16} />,      label: 'Study Materials', locked: !isApproved },
     { path: '/student/tests',     icon: <ClipboardList size={16} />, label: 'Tests',           locked: !isApproved },
@@ -58,6 +60,7 @@ const StudentDashboard = () => {
         <Routes>
           <Route index element={<StudentHome />} />
           <Route path="announcements" element={<StudentAnnouncements onRead={() => setUnreadCount(0)} />} />
+          <Route path="progress" element={<StudentProgress />} />
           <Route path="materials" element={<StudentMaterials />} />
           <Route path="tests"     element={<StudentTests />} />
           <Route path="tests/:id" element={<TakeTest />} />

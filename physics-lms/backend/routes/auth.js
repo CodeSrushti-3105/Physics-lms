@@ -12,6 +12,11 @@ const isValidEmail = (email) => {
   return emailRegex.test(email);
 };
 
+// Gmail-only validation
+const isGmailOnly = (email) => {
+  return email.toLowerCase().endsWith('@gmail.com');
+};
+
 // Register
 router.post('/register', async (req, res) => {
   try {
@@ -24,6 +29,11 @@ router.post('/register', async (req, res) => {
     // Validate email format
     if (!isValidEmail(email)) {
       return res.status(400).json({ message: 'Invalid email format' });
+    }
+    
+    // Validate Gmail only (prevent typos like gimal.com)
+    if (!isGmailOnly(email)) {
+      return res.status(400).json({ message: 'Only Gmail addresses are allowed (e.g., yourname@gmail.com)' });
     }
     
     // Check if email already exists
@@ -82,6 +92,11 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
     
+    // Validate Gmail only
+    if (!isGmailOnly(email)) {
+      return res.status(400).json({ message: 'Only Gmail addresses are allowed' });
+    }
+    
     const user = await User.findOne({ email });
     
     if (!user || !(await user.matchPassword(password)))
@@ -127,6 +142,11 @@ router.post('/forgot-password', async (req, res) => {
     // Validate email format
     if (!isValidEmail(email)) {
       return res.status(400).json({ message: 'Invalid email format' });
+    }
+    
+    // Validate Gmail only
+    if (!isGmailOnly(email)) {
+      return res.status(400).json({ message: 'Only Gmail addresses are allowed' });
     }
     
     // Validate password length

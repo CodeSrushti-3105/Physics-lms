@@ -81,6 +81,9 @@ const RegisterPage = () => {
             <label>Email Address</label>
             <input type="email" placeholder="you@example.com" value={form.email}
               onChange={e => setForm({ ...form, email: e.target.value })} required />
+            <small style={{ color: 'var(--text-muted)', fontSize: '12px', marginTop: '4px', display: 'block' }}>
+              Only Gmail addresses allowed (e.g., yourname@gmail.com)
+            </small>
           </div>
           <div className="form-group">
             <label>Password</label>
