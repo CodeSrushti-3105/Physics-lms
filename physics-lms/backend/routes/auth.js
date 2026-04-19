@@ -31,17 +31,17 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
     
-    // Validate Gmail only (prevent typos like gimal.com)
-    if (!isGmailOnly(email)) {
-      return res.status(400).json({ message: 'Only Gmail addresses are allowed (e.g., yourname@gmail.com)' });
-    }
-    
     // Check if email already exists
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ message: 'Email already registered' });
     
     // Determine if admin or student
     const isAdmin = email.includes('admin');
+    
+    // Validate Gmail only for students (not admin)
+    if (!isAdmin && !isGmailOnly(email)) {
+      return res.status(400).json({ message: 'Only Gmail addresses are allowed (e.g., yourname@gmail.com)' });
+    }
     
     if (isAdmin) {
       // Create admin account - auto-approved
@@ -92,12 +92,12 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
     
-    // Validate Gmail only
-    if (!isGmailOnly(email)) {
+    const user = await User.findOne({ email });
+    
+    // Validate Gmail only for students (skip for admin)
+    if (user && user.role === 'student' && !isGmailOnly(email)) {
       return res.status(400).json({ message: 'Only Gmail addresses are allowed' });
     }
-    
-    const user = await User.findOne({ email });
     
     if (!user || !(await user.matchPassword(password)))
       return res.status(401).json({ message: 'Invalid credentials' });
@@ -144,11 +144,6 @@ router.post('/forgot-password', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email format' });
     }
     
-    // Validate Gmail only
-    if (!isGmailOnly(email)) {
-      return res.status(400).json({ message: 'Only Gmail addresses are allowed' });
-    }
-    
     // Validate password length
     if (newPassword.length < 6) {
       return res.status(400).json({ message: 'Password must be at least 6 characters' });
@@ -158,6 +153,11 @@ router.post('/forgot-password', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'No account found with this email' });
+    }
+    
+    // Validate Gmail only for students (skip for admin)
+    if (user.role === 'student' && !isGmailOnly(email)) {
+      return res.status(400).json({ message: 'Only Gmail addresses are allowed' });
     }
     
     // Verify name matches (case-insensitive, trimmed) - works for old and new users
